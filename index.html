@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7f5ef">
+  <meta name="description" content="A daily Bhagavad Gita shloka, in order.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://allern-bunny.b-cdn.net">
+  <link rel="preconnect" href="https://register.faithtechlabs.com">
+  <link rel="stylesheet" href="./styles.css?v=6">
+  <title>Gita Daily</title>
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Gita Daily home"><span class="brand-symbol">ॐ</span><span>gita<span class="brand-light">daily</span></span></a>
+      <div class="top-actions"><button class="text-nav" id="browseButton" type="button">Explore verses</button><button class="settings-button" id="settingsButton" type="button" aria-label="Open reminder settings">☷</button></div>
+    </header>
+
+    <main>
+      <div class="intro"><span class="eyebrow" id="dateLabel">TODAY</span><h1>Today’s shloka<span class="title-dot">.</span></h1><p id="introCopy">A little time for what matters.</p></div>
+
+      <button class="daily-card" id="dailyCard" type="button" aria-label="Watch today's shloka">
+        <div class="daily-copy">
+          <div class="chapter-tag" id="chapterTag">CHAPTER 01 <span>·</span> LINE UP</div>
+          <div><div class="verse-kicker" id="verseKicker">YOUR NEXT VERSE</div><h2 id="verseTitle">Shloka 1.2</h2><p class="verse-description" id="verseDescription">The complete video, with English subtitles.</p></div>
+          <div class="watch-action"><span class="play-icon" aria-hidden="true">▶</span><span id="watchText">Watch today’s shloka</span><span aria-hidden="true" class="action-arrow">↗</span></div>
+        </div>
+        <div class="daily-poster"><img id="dailyPoster" alt="" loading="eager"><div class="poster-shade"></div><div class="poster-label">BHAGAVAD GITA <span id="posterNumber">01 · 02</span></div></div>
+      </button>
+      <div class="under-card"><span id="progressText">1 shloka watched</span><span>720p · English subtitles</span></div>
+
+      <section class="library" id="library" aria-labelledby="libraryTitle">
+        <div class="library-heading"><div><span class="eyebrow">THE COMPLETE JOURNEY</span><h2 id="libraryTitle">Explore the chapters</h2></div><span id="libraryCount"></span></div>
+        <div class="chapter-grid" id="chapterGrid"></div>
+        <div class="verse-panel" id="versePanel" hidden><div class="verse-panel-heading"><h3 id="selectedChapter">Chapter 1</h3><span id="selectedCount"></span></div><div class="verse-list" id="verseList"></div></div>
+      </section>
+    </main>
+    <footer>One shloka at a time.</footer>
+  </div>
+
+  <div class="player-overlay hidden" id="playerOverlay" role="dialog" aria-modal="true" aria-labelledby="playerTitle">
+    <div class="player-backdrop" id="playerBackdrop"></div>
+    <div class="player-dialog">
+      <div class="player-top"><div><span class="eyebrow" id="playerChapter">CHAPTER 01 · LINE UP</span><h2 id="playerTitle">Shloka 1.2</h2></div><button class="close-button" id="closePlayer" type="button" aria-label="Close video">×</button></div>
+      <div class="video-frame"><video id="video" controls playsinline preload="metadata" crossorigin="anonymous"><track id="subtitleTrack" kind="subtitles" srclang="en" label="English" default></video><div class="video-status" id="videoStatus">Preparing video…</div><button class="video-retry" id="retryVideo" type="button" hidden>Retry video</button></div>
+      <div class="player-bottom"><div class="player-notes"><strong>Line Up · up to 720p</strong><span id="captionStatus">Loading English subtitles…</span></div><button class="done-button" id="markWatched" type="button">Mark as watched <span>✓</span></button></div>
+    </div>
+  </div>
+
+  <div class="settings-overlay hidden" id="settingsOverlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="settings-backdrop" id="settingsBackdrop"></div><div class="settings-sheet"><button class="close-button" id="closeSettings" type="button" aria-label="Close settings">×</button><span class="eyebrow">YOUR PRACTICE</span><h2 id="settingsTitle">Reminders</h2><div class="setting-row"><div><strong>Daily push reminder</strong><p>Get notified at your chosen time.</p></div><button class="toggle" id="reminderToggle" type="button" role="switch" aria-checked="false"><span></span></button></div><div class="setting-row"><label for="reminderTime">At what time?</label><input id="reminderTime" type="time" value="08:00"></div><p class="setting-note">If you do not tap or watch, two more reminders arrive three and six hours later. On iPhone, add this site to your Home Screen before enabling notifications.</p><button class="reset-button" id="resetProgress" type="button">Reset watch progress</button></div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="./app.js?v=13" defer></script>
+</body>
+</html>
