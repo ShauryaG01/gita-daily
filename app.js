@@ -2,6 +2,7 @@ const STATE_KEY = 'gita-daily-state-v3';
 const LEGACY_KEY = 'gita-daily-state-v2';
 const DEFAULT_STATE = { completed: ['1.1'], lastCompleted: null, lastCompletedId: null, reminders: false, reminderTime: '08:00', reminderClickedDate: null, sentReminders: [] };
 const PUSH_KEY = 'gita-daily-push-device-v1';
+const NEW_SITE = 'https://shauryag01.github.io/gita-daily/';
 const $ = id => document.getElementById(id);
 let catalog = null;
 let state = loadState();
@@ -17,6 +18,17 @@ let hlsScript = null;
 
 function loadState() {
   try {
+    const imported = new URLSearchParams(location.hash.slice(1)).get('import');
+    if (imported) {
+      const value = JSON.parse(imported);
+      if (!Array.isArray(value.completed) || !value.completed.every(id => /^\d{1,2}\.\d{1,3}$/.test(id))) throw new Error('Invalid progress transfer');
+      const transferred = { ...DEFAULT_STATE, completed: [...new Set(value.completed)],
+        lastCompleted: value.lastCompleted || null, lastCompletedId: value.lastCompletedId || null,
+        reminderTime: /^([01]\d|2[0-3]):[0-5]\d$/.test(value.reminderTime) ? value.reminderTime : '08:00' };
+      localStorage.setItem(STATE_KEY, JSON.stringify(transferred));
+      history.replaceState(null, '', location.pathname + location.search);
+      return transferred;
+    }
     const raw = localStorage.getItem(STATE_KEY) || localStorage.getItem(LEGACY_KEY);
     if (!raw) return { ...DEFAULT_STATE };
     const value = JSON.parse(raw);
@@ -447,6 +459,24 @@ async function toggleReminder() {
     toast('Could not enable reminders. Please try again.');
   }
 }
+async function moveToNewSite() {
+  const button = $('moveSite');
+  button.disabled = true;
+  button.textContent = 'Moving your progress…';
+  const device = pushDevice();
+  if (device) {
+    try {
+      await pushConfigPromise;
+      await pushRequest({ action: 'unsubscribe', ...device });
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+      if (subscription) await subscription.unsubscribe();
+    } catch (error) { console.warn('Old reminder could not be disabled', error); }
+  }
+  const transferred = { completed: state.completed, lastCompleted: state.lastCompleted,
+    lastCompletedId: state.lastCompletedId, reminderTime: state.reminderTime };
+  location.href = NEW_SITE + '#import=' + encodeURIComponent(JSON.stringify(transferred));
+}
 async function init() {
   let catalogReady;
   $('dailyCard').onclick = async () => {
@@ -479,6 +509,8 @@ async function init() {
   $('reminderToggle').onclick = toggleReminder;
   $('reminderTime').onchange = event => { state.reminderTime = event.target.value; save(); if (state.reminders) reportPush('settings'); };
   $('resetProgress').onclick = () => { if (confirm('Reset your watch progress on this device?')) { state = { ...DEFAULT_STATE }; save(); toast('Watch progress reset to Shloka 1.1 completed'); } };
+  if (location.origin === new URL(NEW_SITE).origin) $('moveSite').style.display = 'none';
+  $('moveSite').onclick = moveToNewSite;
   $('dailyPoster').onerror = () => { $('dailyPoster').style.opacity = '0'; };
   document.addEventListener('keydown', event => { if (event.key === 'Escape') { if (!$('playerOverlay').classList.contains('hidden')) closePlayer(); $('settingsOverlay').classList.add('hidden'); } });
   if ('serviceWorker' in navigator) {
