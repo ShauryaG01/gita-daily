@@ -13,6 +13,7 @@ let selectedChapter = null;
 let hls = null;
 let playerSessionId = 0;
 let subtitleRequestId = 0;
+let renderedDate = null;
 const chapterLoads = new Map();
 let hlsScript = null;
 
@@ -64,20 +65,17 @@ function loadChapter(chapter) {
   }
   return chapterLoads.get(chapter);
 }
-function nextLesson() {
-  const rows = availableLessons();
-  return rows.find(lesson => !state.completed.includes(lesson.id)) || rows[rows.length - 1];
-}
 function watchedToday() {
-  return !!state.lastCompleted && localDate(new Date(state.lastCompleted)) === localDate();
+  return !!state.lastCompleted && state.lastCompletedId === dailyLesson().id &&
+    localDate(new Date(state.lastCompleted)) === localDate();
 }
 function dailyLesson() {
-  if (watchedToday()) {
-    const id = state.lastCompletedId || state.completed[state.completed.length - 1];
-    const row = availableLessons().find(lesson => lesson.id === id);
-    if (row) return row;
-  }
-  return nextLesson();
+  const now = new Date();
+  const localDay = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const firstDay = Date.UTC(2026, 10, 8);
+  const dayIndex = Math.max(0, Math.floor((localDay - firstDay) / 86400000));
+  const rows = availableLessons();
+  return rows[Math.min(dayIndex, rows.length - 1)];
 }
 function verseLabel(lesson) {
   const title = lesson.title || ('Shloka ' + lesson.id);
@@ -97,6 +95,7 @@ function adaptiveMaster(lesson) {
 }
 function render() {
   if (!catalog) return;
+  renderedDate = localDate();
   const lesson = dailyLesson();
   const doneToday = watchedToday();
   $('dateLabel').textContent = new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'long', day: 'numeric' }).format(new Date()).toUpperCase();
@@ -249,7 +248,8 @@ function openPlayer(lesson) {
   video.onpause = () => { if (video.ended) wasPlaying = false; };
   video.onended = () => {
     if (playerSessionId === sessionId && currentLesson === lesson &&
-        !state.completed.includes(lesson.id)) markWatched();
+        (!state.completed.includes(lesson.id) ||
+         (lesson.id === dailyLesson().id && !watchedToday()))) markWatched();
   };
   video.onplaying = () => {
     clearTimeout(recoveryTimer);
@@ -377,7 +377,7 @@ function retryVideo() {
 }
 function markWatched() {
   if (!currentLesson) return;
-  const stoppingToday = currentLesson.id === nextLesson().id;
+  const stoppingToday = currentLesson.id === dailyLesson().id;
   if (!state.completed.includes(currentLesson.id)) state.completed.push(currentLesson.id);
   if (stoppingToday) {
     state.lastCompleted = new Date().toISOString();
@@ -509,6 +509,13 @@ async function init() {
   $('reminderToggle').onclick = toggleReminder;
   $('reminderTime').onchange = event => { state.reminderTime = event.target.value; save(); if (state.reminders) reportPush('settings'); };
   $('resetProgress').onclick = () => { if (confirm('Reset your watch progress on this device?')) { state = { ...DEFAULT_STATE }; save(); toast('Watch progress reset to Shloka 1.1 completed'); } };
+  const refreshDay = async () => {
+    if (!catalog || renderedDate === localDate()) return;
+    try { await loadChapter(dailyLesson().chapter); render(); }
+    catch (error) { console.warn('Could not refresh daily shloka', error); }
+  };
+  setInterval(refreshDay, 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshDay(); });
   if (location.origin === new URL(NEW_SITE).origin) $('moveSite').style.display = 'none';
   $('moveSite').onclick = moveToNewSite;
   $('dailyPoster').onerror = () => { $('dailyPoster').style.opacity = '0'; };
