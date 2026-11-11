@@ -112,10 +112,10 @@ function render() {
     'Up to 720p · English subtitles' : 'Up to 720p · No source subtitles';
   $('dailyCard').setAttribute('aria-label', 'Watch ' + verseLabel(lesson));
   $('progressText').textContent = state.completed.filter(id => availableLessons().some(x => x.id === id)).length + ' shloka videos watched';
+  $('reminderInvite').style.display = state.reminders ? 'none' : '';
   $('libraryCount').textContent = catalog.chapters.length + ' chapters';
   $('reminderToggle').classList.toggle('on', state.reminders);
   $('reminderToggle').setAttribute('aria-checked', String(state.reminders));
-  $('reminderTime').value = state.reminderTime || '08:00';
   renderChapters();
   if (selectedChapter !== null) renderVerses(selectedChapter);
 }
@@ -507,7 +507,7 @@ async function init() {
   $('closeSettings').onclick = () => $('settingsOverlay').classList.add('hidden');
   $('settingsBackdrop').onclick = () => $('settingsOverlay').classList.add('hidden');
   $('reminderToggle').onclick = toggleReminder;
-  $('reminderTime').onchange = event => { state.reminderTime = event.target.value; save(); if (state.reminders) reportPush('settings'); };
+  $('reminderPrompt').onclick = toggleReminder;
   $('resetProgress').onclick = () => { if (confirm('Reset your watch progress on this device?')) { state = { ...DEFAULT_STATE }; save(); toast('Watch progress reset to Shloka 1.1 completed'); } };
   const refreshDay = async () => {
     if (!catalog || renderedDate === localDate()) return;

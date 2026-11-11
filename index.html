@@ -34,6 +34,7 @@
         <div class="daily-poster"><img id="dailyPoster" alt="" loading="eager"><div class="poster-shade"></div><div class="poster-label">BHAGAVAD GITA <span id="posterNumber">01 · 02</span></div></div>
       </button>
       <div class="under-card"><span id="progressText">1 shloka watched</span><span>720p · English subtitles</span></div>
+      <div class="reminder-invite" id="reminderInvite"><span>Reminders at 8am, 12pm, 4pm, 6pm, 8pm &amp; 10pm</span><button id="reminderPrompt" type="button">Enable reminders</button></div>
 
       <section class="library" id="library" aria-labelledby="libraryTitle">
         <div class="library-heading"><div><span class="eyebrow">THE COMPLETE JOURNEY</span><h2 id="libraryTitle">Explore the chapters</h2></div><span id="libraryCount"></span></div>
@@ -54,9 +55,9 @@
   </div>
 
   <div class="settings-overlay hidden" id="settingsOverlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
-    <div class="settings-backdrop" id="settingsBackdrop"></div><div class="settings-sheet"><button class="close-button" id="closeSettings" type="button" aria-label="Close settings">×</button><span class="eyebrow">YOUR PRACTICE</span><h2 id="settingsTitle">Reminders</h2><div class="setting-row"><div><strong>Daily push reminder</strong><p>Get notified at your chosen time.</p></div><button class="toggle" id="reminderToggle" type="button" role="switch" aria-checked="false"><span></span></button></div><div class="setting-row"><label for="reminderTime">At what time?</label><input id="reminderTime" type="time" value="08:00"></div><p class="setting-note">If you do not tap or watch, two more reminders arrive three and six hours later. On iPhone, add this site to your Home Screen before enabling notifications.</p><button class="reset-button" id="moveSite" type="button">Move progress to the shorter address</button><button class="reset-button" id="resetProgress" type="button">Reset watch progress</button></div>
+    <div class="settings-backdrop" id="settingsBackdrop"></div><div class="settings-sheet"><button class="close-button" id="closeSettings" type="button" aria-label="Close settings">×</button><span class="eyebrow">YOUR PRACTICE</span><h2 id="settingsTitle">Reminders</h2><div class="setting-row"><div><strong>Daily reminders</strong><p>8am, 12pm, 4pm, 6pm, 8pm, and 10pm in your local time.</p></div><button class="toggle" id="reminderToggle" type="button" role="switch" aria-checked="false"><span></span></button></div><p class="setting-note">Opening a reminder stops the rest for that day. Finishing or marking today's video watched also stops them. On iPhone, add this site to your Home Screen before enabling notifications.</p><button class="reset-button" id="moveSite" type="button">Move progress to the shorter address</button><button class="reset-button" id="resetProgress" type="button">Reset watch progress</button></div>
   </div>
   <div class="toast" id="toast" role="status"></div>
-  <script src="./app.js?v=14" defer></script>
+  <script src="./app.js?v=15" defer></script>
 </body>
 </html>
